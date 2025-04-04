@@ -1,0 +1,36 @@
+name: (auto) [frontend] Build & Push Images
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "frontend/**"
+      - ".github/**"
+    branches:
+      - dev
+      - main
+
+concurrency:
+  group: docker_${{github.ref_name}}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: registry.samuelru.com
+
+jobs:
+  frontend_build_and_push:
+    name: Build frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build & Push
+        uses: ./.github/actions/build_and_push_image
+        with:
+          REGISTRY: ${{ env.REGISTRY }}
+          REGISTRY_USERNAME: ${{ secrets.CUSTOM_REGISTRY_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.CUSTOM_REGISTRY_ACCESS_TOKEN }}
+          MODULE: frontend
+          IMAGE_NAME: intech-demo/frontend

@@ -1,0 +1,42 @@
+name: "build and push image"
+inputs:
+  REGISTRY:
+    description: "registry"
+    required: true
+  REGISTRY_USERNAME:
+    description: "registry username"
+    required: true
+  REGISTRY_PASSWORD:
+    description: "registry password"
+    required: true
+  MODULE:
+    description: "Image name"
+    required: true
+  IMAGE_NAME:
+    description: "Image name"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@v4
+      with:
+        images: ${{ inputs.REGISTRY }}/${{ inputs.IMAGE_NAME }}
+
+    - name: Login to Docker Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ inputs.REGISTRY }}
+        username: ${{ inputs.REGISTRY_USERNAME }}
+        password: ${{ inputs.REGISTRY_PASSWORD }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: ${{ inputs.MODULE }}
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        build-args: |
+          VERSION=${{ github.run_id }}
