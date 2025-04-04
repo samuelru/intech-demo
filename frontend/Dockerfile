@@ -1,8 +1,6 @@
 # build stage
 FROM node:20-alpine as build-stage
 
-ARG VERSION=dev
-
 WORKDIR /app
 COPY . .
 RUN yarn install
