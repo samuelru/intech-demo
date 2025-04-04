@@ -7,7 +7,6 @@ WORKDIR /app
 COPY . .
 RUN yarn install
 RUN yarn build
-RUN echo "{\"version\":\"$VERSION\"}" > /app/dist/version.json
 
 # production stage
 FROM nginx:stable-alpine as production-stage
