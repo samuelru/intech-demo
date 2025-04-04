@@ -14,9 +14,6 @@ concurrency:
   group: docker_${{github.ref_name}}
   cancel-in-progress: true
 
-env:
-  REGISTRY: registry.samuelru.com
-
 jobs:
   frontend_build_and_push:
     name: Build frontend
