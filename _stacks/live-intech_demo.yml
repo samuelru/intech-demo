@@ -4,7 +4,24 @@ services:
   intech-demo_frontend:
     image: registry.samuelru.com/intech-demo/frontend:main
     restart: always
-
+    networks:
+      - traefik
+      - intech-demo
+    deploy:
+      mode: replicated
+      replicas: 1
+      update_config:
+        delay: 60s
+        monitor: 60s
+      labels:
+        - traefik.enable=true
+        - traefik.http.services.intech-demo_frontend_service.loadbalancer.server.port=80
+        - traefik.http.routers.intech-demo_frontend_router.rule=Host(`intech-demo.samuelru.com`)
+        - traefik.http.routers.intech-demo_frontend_router.service=intech-demo_frontend_service
+        - traefik.http.routers.intech-demo_frontend_router.tls=true
+        - traefik.http.routers.intech-demo_frontend_router.tls.certresolver=myresolver
+        - traefik.http.routers.intech-demo_frontend_router.entrypoints=websecure
+        - traefik.docker.network=traefik
 
 networks:
   intech-demo:
